@@ -1,4 +1,5 @@
 from collections import defaultdict
+import random
 
 
 # The condition that you can use to define whether a character is counted
@@ -42,7 +43,7 @@ def load_and_get_pair_counts(file_path):
     return pair_counts
 
 
-# ATTEMPT 2: Build it iteratively, making sure that each new node is an improvement
+# METHOD 2: Build it iteratively, making sure that each new node is an improvement
 def iteratively_color_nodes(pairs, pair_counts, print_info):
     # Initialize
     connected_letters = set()
@@ -96,7 +97,7 @@ def iteratively_color_nodes(pairs, pair_counts, print_info):
     return black_letters, white_letters
 
 
-# ATTEMPT 1: Given sorted counts, uses Kruskal's algorithm to build the maximum spanning tree between the letters in the vocab
+# METHOD 1: Given sorted counts, uses Kruskal's algorithm to build the maximum spanning tree between the letters in the vocab
 def get_max_spanning_tree(sorted_pairs, print_info):
     # Initialize the letters that we've found so far and the connections in our max spanning tree
     connected_letters = set()
@@ -128,6 +129,27 @@ def get_max_spanning_tree(sorted_pairs, print_info):
 
     # Return all the info
     return black_letters, white_letters, connections
+
+
+# METHOD 3: Randomly colors each letter with a 50/50 chance of being one or the other
+def randomly_color(sorted_pairs):
+    # Initialize the letters that we've found so far and the connections in our max spanning tree
+    connected_letters = set()
+    black_letters = set()
+    white_letters = set()
+
+    # Add each letter to a random set
+    for pair in sorted_pairs:
+        for letter in pair:
+            if letter not in connected_letters:
+                if random.random() > 0.5:
+                    black_letters.add(letter)
+                else:
+                    white_letters.add(letter)
+            connected_letters.add(letter)
+
+    # Return
+    return black_letters, white_letters
 
 
 # Returns the accuracy of the color division
@@ -171,6 +193,7 @@ def main(file_path):
     print_info = False
     blacks_1, whites_1, connections_1 = get_max_spanning_tree(sorted_pairs, print_info)
     blacks_2, whites_2 = iteratively_color_nodes(sorted_pairs, pair_counts, print_info)
+    blacks_3, whites_3 = randomly_color(sorted_pairs)
 
     # Get the accuracy on the training data if desired
     get_accuracy = True
@@ -179,6 +202,8 @@ def main(file_path):
         get_accuracy_given_counts(blacks_1, pair_counts)
         print("Accuracy given method 2:")
         get_accuracy_given_counts(blacks_2, pair_counts)
+        print("Accuracy given method 3:")
+        get_accuracy_given_counts(blacks_3, pair_counts)
 
 
 if __name__ == '__main__':
